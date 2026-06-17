@@ -29,6 +29,25 @@ Many automation tasks rely heavily on string processing because network devices,
 - extract information
 - format output
 
+## Practice Tasks
+
+These exercises focus on realistic string parsing for network automation.
+Each task combines several methods and also trains loops, conditions, indexes,
+slicing, validation, normalization, and structured output.
+
+| # | File | Scenario | Main Methods |
+|---|---|---|---|
+| 001 | `001_interface_brief_inventory.py` | Parse interface brief output | `splitlines()`, `strip()`, `split()`, `lower()`, `replace()`, `startswith()` |
+| 002 | `002_vlan_allowed_expander.py` | Expand trunk allowed VLAN ranges | `partition()`, `split()`, `strip()`, `replace()`, `isdigit()`, `zfill()` |
+| 003 | `003_acl_rule_parser.py` | Parse ACL lines with optional ports | `splitlines()`, `strip()`, `startswith()`, `lower()`, `split()`, `isdigit()`, `count()` |
+| 004 | `004_syslog_event_summary.py` | Extract link events from syslog | `find()`, `index()`, slicing, `partition()`, `rpartition()`, `endswith()` |
+| 005 | `005_interface_name_report.py` | Normalize interface names for reports | `split()`, `strip()`, `replace()`, `rsplit()`, `isdigit()`, `zfill()`, `join()` |
+| 006 | `006_neighbor_table_parser.py` | Parse neighbor discovery table | `splitlines()`, `split()`, `startswith()`, `isalnum()`, `isalpha()`, `upper()`, `lower()`, `title()` |
+| 007 | `007_config_block_extractor.py` | Extract one interface config block | `splitlines()`, `strip()`, `startswith()`, `lower()`, `join()` |
+| 008 | `008_prompt_command_audit.py` | Audit dangerous config-mode commands | `partition()`, `startswith()`, `endswith()`, `lower()`, `count()` |
+| 009 | `009_address_cleanup_validator.py` | Validate IP and MAC inventory data | `partition()`, `count()`, `split()`, `isdigit()`, `replace()`, `lower()`, `isalnum()` |
+| 010 | `010_change_report_builder.py` | Build a clean change report | `splitlines()`, `strip()`, `split()`, `rsplit()`, `lower()`, `upper()`, `title()`, `endswith()`, `join()` |
+
 ---
 
 ## String Methods
