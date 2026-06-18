@@ -49,9 +49,40 @@ remark skip this line
 def solve(data):
     result = []
     for item in data.splitlines():
-        item = item.strip()
-        print(item)
-        
+        line = item.strip()
+        if not line or line.startswith("!") or line.startswith("remark"):
+            continue
+        parts = line.lower().split()
+        rule = {
+            'action': parts[0],
+            'protocol': parts[1],
+            'source': None,
+            'source_type': None,
+            'destination': None,
+            'port': None
+        }
+        if parts[2] == 'host':
+            rule['source'] = parts[3]
+            rule['source_type'] = "host"
+            rule['destination'] = parts[4]
+            if "eq" in parts:
+                port = parts[-1]
+                if port.isdigit():
+                    rule["port"] = int(port)
+                else:
+                    rule["port"] = None
+        else:
+            rule["source"] = parts[2]
+            rule["destination"] = parts[3]
+            if parts[2] == "any":
+                rule["source_type"] = "any"
+            else:
+                rule["source_type"] = "network"
+            if "eq" in parts:
+                rule["port"] = int(parts[-1])
+
+        result.append(rule)
+    return result
 
 
 if __name__ == "__main__":
@@ -67,55 +98,46 @@ if __name__ == "__main__":
 """
 def solve(data):
     result = []
-
-    for line in data.splitlines():
-        line = line.strip()
-        if not line or line.startswith('!'):
+    for item in data.splitlines():
+        line = item.strip()
+        if not line or line.startswith("!") or line.startswith("remark"):
             continue
 
-        tokens = line.split()
-        if len(tokens) < 4:
+        parts = line.lower().split()
+        if len(parts) < 4 or parts[0] not in ("permit", "deny"):
             continue
 
-        action = tokens[0].lower()
-        if action not in ('permit', 'deny'):
-            continue
+        rule = {
+            "action": parts[0],
+            "protocol": parts[1],
+            "source": None,
+            "source_type": None,
+            "destination": None,
+            "port": None,
+        }
 
-        protocol = tokens[1].lower()
-        source_index = 2
-
-        if tokens[source_index] == 'host':
-            if source_index + 2 >= len(tokens):
+        if parts[2] == "host":
+            if len(parts) < 5:
                 continue
-            source = tokens[source_index + 1]
-            source_type = 'host'
-            destination_index = source_index + 2
+            rule["source"] = parts[3]
+            rule["source_type"] = "host"
+            rule["destination"] = parts[4]
         else:
-            source = tokens[source_index]
-            if source == 'any':
-                source_type = 'any'
-            elif source.count('/') == 1:
-                source_type = 'network'
+            rule["source"] = parts[2]
+            rule["destination"] = parts[3]
+            if parts[2] == "any":
+                rule["source_type"] = "any"
+            elif parts[2].count("/") == 1:
+                rule["source_type"] = "network"
             else:
-                source_type = 'host'
-            destination_index = source_index + 1
+                rule["source_type"] = "host"
 
-        destination = tokens[destination_index]
-        port = None
+        if "eq" in parts:
+            eq_index = parts.index("eq")
+            if eq_index + 1 < len(parts) and parts[eq_index + 1].isdigit():
+                rule["port"] = int(parts[eq_index + 1])
 
-        if 'eq' in tokens:
-            eq_index = tokens.index('eq')
-            if eq_index + 1 < len(tokens) and tokens[eq_index + 1].isdigit():
-                port = int(tokens[eq_index + 1])
-
-        result.append({
-            'action': action,
-            'protocol': protocol,
-            'source': source,
-            'source_type': source_type,
-            'destination': destination,
-            'port': port,
-        })
+        result.append(rule)
 
     return result
 """
