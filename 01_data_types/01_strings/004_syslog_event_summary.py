@@ -15,16 +15,33 @@ Input:
 - multiline syslog text
 
 Rules:
-1. Process the text line by line.
-2. Use find() to keep only lines that contain '%LINK-3-UPDOWN'.
-3. Use rpartition(':') to separate the syslog header from the message.
-4. Use index() plus slicing to extract the interface after 'Interface '.
-5. Determine state:
+For each syslog line:
+1. Strip spaces from both sides of the line.
+2. Skip empty lines.
+3. Skip lines that do not contain '%LINK-3-UPDOWN'.
+
+Now parse only matching lines like this:
+SW1: %LINK-3-UPDOWN: Interface Gi0/1, changed state to up
+
+4. Extract device:
+   - device is the text before the first ':'.
+   - Use partition(':').
+   - Example: 'SW1'
+5. Extract message:
+   - message is the text after the last ':'.
+   - Use rpartition(':').
+   - Example: 'Interface Gi0/1, changed state to up'
+6. Extract interface from message:
+   - interface starts after 'Interface '.
+   - interface ends before the comma ','.
+   - Use index() and slicing.
+   - Example: 'Gi0/1'
+7. Determine state from message:
    - 'up' if the message ends with 'up'
    - 'down' if the message ends with 'down'
    - 'unknown' otherwise
-6. Return dictionaries with device, interface, and state.
-7. The device is the text before the first colon.
+8. Add one dictionary to result:
+   - {'device': device, 'interface': interface, 'state': state}
 
 Expected result:
 - [
@@ -42,7 +59,46 @@ SW1: %LINK-3-UPDOWN: Interface Gi0/2, changed state to down
 """
 
 def solve(data):
-    raise NotImplementedError("Write your solution here")
+    result = []
+    for item in data.splitlines():
+        if not item:
+            continue
+        if item.find("%LINK-3-UPDOWN") == -1:
+            continue
+        
+        device, __, __ = item.partition(":")
+        __, __, message = item.rpartition(":")
+
+        message = message.strip()
+        marker = 'Interface '
+
+        try:
+            start = message.index(marker)
+            end = message.index(',', start)
+        except ValueError:
+            continue
+    
+        start = start + len(marker)
+        interface_name = message[start:end]
+        fixed_message = message.lower()
+
+        if fixed_message.endswith('up'):
+            state = 'up'
+        elif fixed_message.endswith('down'):
+            state = 'down'
+        else:
+            state = 'unknown'
+
+        result.append(
+            {
+                'device': device,
+                'interface': interface_name,
+                'state': state
+            }
+        )
+
+    return result
+        
 
 if __name__ == "__main__":
     try:
