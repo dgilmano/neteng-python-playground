@@ -33,7 +33,23 @@ Expected result:
 data = 'GigabitEthernet0/1, Gi0/12, FastEthernet0/3, Loopback0'
 
 def solve(data):
-    raise NotImplementedError("Write your solution here")
+    result = []
+
+    for item in data.split(','):
+        item = item.strip()
+        item = item.replace('GigabitEthernet', "Gi")
+        item = item.replace('FastEthernet', 'Fa')
+        if '/' not in item:
+            continue
+
+        prefix, number = item.rsplit('/', 1)
+        if not number.isdigit():
+            continue
+
+        result.append(prefix + '/' + number.zfill(3))
+
+    return ", ".join(result)
+    
 
 if __name__ == "__main__":
     try:
