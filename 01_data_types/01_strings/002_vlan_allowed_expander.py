@@ -23,6 +23,14 @@ Rules:
 6. Skip invalid tokens like abc.
 7. Return VLAN IDs as 4-character strings using zfill().
 
+Step output examples:
+- After partition('vlan') and removing spaces, VLAN text should look like this:
+  '1,3,10-12,abc,20'
+- After split(','), tokens should look like this:
+  ['1', '3', '10-12', 'abc', '20']
+- After expanding ranges and applying zfill(4), result should look like this:
+  ['0001', '0003', '0010', '0011', '0012', '0020']
+
 Expected result:
 - ['0001', '0003', '0010', '0011', '0012', '0020']
 """
@@ -33,16 +41,17 @@ data = 'switchport trunk allowed vlan 1, 3,10-12,abc,20'
 
 def solve(data):
     result = []
-    clear_data = data.partition('vlan')[2].split(',')
-    for item in clear_data:
-        item = item.strip()
-        if item.isdigit():
-            result.append(int(item))
-        else:
-            if "-" in item:
-                start, sym, end = item.partition('-')
-                for i in range(int(start), int(end) + 1):
-                    result.append(i)
+    vlan_part = data.partition('vlan')[2].strip()
+    for items in vlan_part.split(','):
+        items = items.strip()
+
+        if '-' in items:
+            start, end = items.split("-")
+            for i in range(int(start), int(end) + 1):
+                result.append(i)
+        if items.isdigit():
+            result.append(int(items.zfill(4)))
+        
     return result
 
 

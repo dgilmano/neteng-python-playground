@@ -15,14 +15,36 @@ Input:
 - 'GigabitEthernet0/1, Gi0/12, FastEthernet0/3, Loopback0'
 
 Rules:
-1. Split by commas.
-2. Strip each interface name.
-3. Convert long names:
-   - GigabitEthernet -> Gi
-   - FastEthernet -> Fa
-4. For interfaces with '/', pad the last numeric part to 3 digits.
-5. Skip interfaces whose last part after '/' is not numeric.
-6. Join normalized interfaces with ', '.
+For each comma-separated interface name:
+1. Split the input string by commas.
+2. Strip spaces from both sides of the interface name.
+
+Now parse one interface name like this:
+GigabitEthernet0/1
+
+3. Normalize long interface names:
+   - replace 'GigabitEthernet' with 'Gi'
+   - replace 'FastEthernet' with 'Fa'
+4. Skip the interface if it does not contain '/'.
+   - Example: 'Loopback0' is skipped.
+5. Split the interface from the right side using rsplit('/', 1).
+   - prefix is the text before the last '/'.
+   - number is the text after the last '/'.
+   - Example: 'Gi0/12' -> prefix 'Gi0', number '12'
+6. Skip the interface if number is not numeric.
+7. Pad number to 3 digits with zfill(3).
+   - Example: '1' -> '001'
+8. Add the normalized interface to result:
+   - prefix + '/' + padded number
+9. Join all normalized interfaces with ', '.
+
+Step output examples:
+- After split(','), raw items should look like this:
+  ['GigabitEthernet0/1', ' Gi0/12', ' FastEthernet0/3', ' Loopback0']
+- After strip() and replace(), one interface should look like this:
+  'Gi0/1'
+- After rsplit() and zfill(3), one normalized interface should look like this:
+  'Gi0/001'
 
 Expected result:
 - 'Gi0/001, Gi0/012, Fa0/003'

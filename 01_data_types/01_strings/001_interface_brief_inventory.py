@@ -23,6 +23,12 @@ Rules:
 5. Convert line and protocol statuses to lowercase.
 6. Keep only rows that have at least 4 columns.
 
+Step output examples:
+- After split(), one data row should look like this:
+  ['GigabitEthernet0/1', '192.168.1.10', 'UP', 'UP']
+- After interface and status normalization, one result item should look like this:
+  {'interface': 'Gi0/1', 'ip': '192.168.1.10', 'line_status': 'up', 'protocol_status': 'up'}
+
 Expected result:
 - [
     {'interface': 'Gi0/1', 'ip': '192.168.1.10', 'line_status': 'up', 'protocol_status': 'up'},
@@ -43,20 +49,25 @@ FastEthernet0/3        10.0.0.1        Up     Down
 
 def solve(data):
     result = []
-    for item in data.splitlines():
-        line = item.split()
-        if item.startswith('Interface') or item.startswith('Loopback'):
+    for items in data.splitlines():
+        items.strip()
+        if not items or items.startswith('Interface'):
             continue
-        
-        if not item.strip() or len(line) < 4:
+        if items.startswith("Loopback"):
             continue
-        
-        line_update = line[0].replace('GigabitEthernet', 'Gi').replace('FastEthernet', 'Fa')
+
+        columes = items.split()
+        if len(columes) < 4:
+            continue
+
+        interface = columes[0].replace("GigabitEthernet","Gi")
+        interface = columes[0].replace("FastEthernet", "Fa")
+
         result.append({
-            'inteface': line_update,
-            'ip': line[1],
-            'line_status': line[2].lower(),
-            'protocol_status': line[3].lower()
+            'interface': interface,
+            'ip': columes[1],
+            'line_status': columes[2],
+            'protocol_status': columes[3].lower()
         })
     return result
 

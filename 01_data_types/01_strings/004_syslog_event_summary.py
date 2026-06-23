@@ -43,6 +43,15 @@ SW1: %LINK-3-UPDOWN: Interface Gi0/1, changed state to up
 8. Add one dictionary to result:
    - {'device': device, 'interface': interface, 'state': state}
 
+Step output examples:
+- After filtering, one matching line should look like this:
+  'SW1: %LINK-3-UPDOWN: Interface Gi0/1, changed state to up'
+- After partition/rpartition, extracted values should look like this:
+  device = 'SW1'
+  message = 'Interface Gi0/1, changed state to up'
+- After slicing the message, one result item should look like this:
+  {'device': 'SW1', 'interface': 'Gi0/1', 'state': 'up'}
+
 Expected result:
 - [
     {'device': 'SW1', 'interface': 'Gi0/1', 'state': 'up'},

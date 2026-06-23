@@ -15,16 +15,45 @@ Input:
 - multiline notes in the form '<site>|<device>|<change>|<result>'
 
 Rules:
-1. Split the text into lines and strip each line.
+For each change note line:
+1. Strip spaces from both sides of the line.
 2. Skip empty lines.
-3. Split each line into four fields using '|'.
-4. Format site with title().
-5. Format device with upper().
-6. Normalize result with lower().
-7. Keep only lines whose result ends with 'ok'.
-8. For the change field, use rsplit(' ', 1) to separate action text and ticket ID.
-9. Return newline-joined report lines:
-   '<Site> / <DEVICE> / <ticket>: <action>'
+
+Now parse one change note like this:
+istanbul edge|sw1|vlan update CHG001|OK
+
+3. Split the line into fields using '|'.
+4. Strip spaces from each field.
+5. Skip the line if it does not have exactly 4 fields.
+6. Read the fields in this order:
+   - site
+   - device
+   - change
+   - result
+7. Normalize result with lower().
+8. Keep only lines whose result ends with 'ok'.
+   - Example: 'OK' is kept.
+   - Example: 'failed' is skipped.
+9. Split the change field from the right side using rsplit(' ', 1).
+   - action is the text before the last space.
+   - ticket is the text after the last space.
+   - Example: 'vlan update CHG001' -> action 'vlan update', ticket 'CHG001'
+10. Format site with title().
+    - Example: 'istanbul edge' -> 'Istanbul Edge'
+11. Format device with upper().
+    - Example: 'sw1' -> 'SW1'
+12. Add one report line:
+    - '<Site> / <DEVICE> / <ticket>: <action>'
+13. Return all report lines joined with '\\n'.
+
+Step output examples:
+- After split('|') and strip(), one note should look like this:
+  ['istanbul edge', 'sw1', 'vlan update CHG001', 'OK']
+- After rsplit(' ', 1), change parts should look like this:
+  action = 'vlan update'
+  ticket = 'CHG001'
+- After title(), upper(), and formatting, one report line should look like this:
+  'Istanbul Edge / SW1 / CHG001: vlan update'
 
 Expected result:
 - 'Istanbul Edge / SW1 / CHG001: vlan update\\nLondon Core / R2 / CHG003: acl cleanup'

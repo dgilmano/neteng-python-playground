@@ -15,14 +15,37 @@ Input:
 - multiline terminal session log
 
 Rules:
-1. Process one line at a time.
-2. A command line contains '#'.
-3. Use partition('#') to split prompt and command.
-4. Strip both parts.
-5. Keep commands only when the prompt ends with '(config)' or '(config-if)'.
-6. A dangerous command is one that starts with 'no ' or equals 'shutdown'.
-7. Normalize commands to lowercase.
-8. Return a list of '<prompt>: <command>' strings.
+For each terminal session line:
+1. Strip spaces from both sides of the line.
+2. Skip empty lines.
+3. Skip lines that do not contain exactly one '#'.
+
+Now parse one command line like this:
+SW1(config-if)# shutdown
+
+4. Use partition('#') to split the line into:
+   - prompt: text before '#'
+   - command: text after '#'
+5. Strip spaces from prompt and command.
+6. Normalize command to lowercase.
+   - Example: ' shutdown' -> 'shutdown'
+7. Keep commands only from configuration prompts:
+   - prompt ends with '(config)'
+   - or prompt ends with '(config-if)'
+8. A dangerous command is one of these:
+   - command starts with 'no '
+   - command equals 'shutdown'
+9. Add one string to result:
+   - '<prompt>: <command>'
+
+Step output examples:
+- After strip() and filtering, one command line should look like this:
+  'SW1(config-if)# shutdown'
+- After partition('#') and normalization, values should look like this:
+  prompt = 'SW1(config-if)'
+  command = 'shutdown'
+- After adding a dangerous command, result should look like this:
+  ['SW1(config-if): shutdown']
 
 Expected result:
 - ['SW1(config-if): shutdown', 'SW1(config): no router ospf 1']

@@ -28,6 +28,12 @@ Rules:
    - 'any' if source is 'any'
    - 'host' otherwise
 
+Step output examples:
+- After strip(), lower(), and split(), one ACL line should look like this:
+  ['permit', 'tcp', '10.0.0.0/24', 'any', 'eq', '443']
+- After reading fields and converting the port, one result item should look like this:
+  {'action': 'permit', 'protocol': 'tcp', 'source': '10.0.0.0/24', 'source_type': 'network', 'destination': 'any', 'port': 443}
+
 Expected result:
 - [
     {'action': 'permit', 'protocol': 'tcp', 'source': '10.0.0.0/24', 'source_type': 'network', 'destination': 'any', 'port': 443},
