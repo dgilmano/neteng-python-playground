@@ -58,11 +58,28 @@ SW1#show version
 SW1(config-if)# shutdown
 SW1(config)# no router ospf 1
 SW1#show ip int brief
+SW1 show ip int brief
 SW1(config)#hostname SW1
 """
 
 def solve(data):
-    raise NotImplementedError("Write your solution here")
+    result = []
+    for items in data.splitlines():
+        items = items.strip().rstrip()
+        if not items or items.find("#") == -1:
+            continue
+        prompt, symbol, command = items.partition("#")
+        prompt = prompt.strip()
+        command = command.strip().lower()
+
+        if not prompt.endswith("(config)") and not prompt.endswith("(config-if)"):
+            continue
+        
+        if command.startswith("no") or command == "shutdown":
+            result.append(prompt + ": " + command)
+    return result
+        
+
 
 if __name__ == "__main__":
     try:
@@ -91,7 +108,7 @@ def solve(data):
             continue
 
         if command.startswith('no ') or command == 'shutdown':
-            result.append(prompt + ': ' + command)
+            result.append(prompt + ' : ' + command)
 
     return result
 """

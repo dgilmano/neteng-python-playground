@@ -61,7 +61,30 @@ interface Gi0/2
 """
 
 def solve(data):
-    raise NotImplementedError("Write your solution here")
+    result = []
+    in_block = False
+
+    for item in data.splitlines():
+        raw_line = item
+        line = item.strip()
+
+        if not line:
+            continue
+
+        if line == "interface Gi0/1":
+            in_block = True
+            result.append(line)
+            continue
+
+        if in_block and raw_line.startswith("interface "):
+            break
+
+        if in_block:
+            if line.lower().startswith("shutdown"):
+                continue
+            result.append(line)
+
+    return "\n".join(result)
 
 if __name__ == "__main__":
     try:

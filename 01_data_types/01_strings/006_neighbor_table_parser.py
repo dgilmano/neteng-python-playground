@@ -74,7 +74,28 @@ def solve(data):
         items = items.strip()
         if not items or items.startswith("Device ID"):
             continue
-        print(items)
+        data = items.split(maxsplit=3)
+        if len(data) < 4:
+            continue
+
+        if not data[0].isalnum():
+            continue
+
+        if not data[2].isalpha():
+            continue
+
+        result.append(
+            {
+                'neighbor': data[0].upper(),
+                'local_interface': data[1].upper(),
+                'capability': data[2].lower(),
+                'platform': data[3].title()
+            }
+        )
+    return result
+
+
+        
 
 if __name__ == "__main__":
     try:
