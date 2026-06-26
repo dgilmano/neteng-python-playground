@@ -68,7 +68,32 @@ london core|r2|acl cleanup CHG003|ok
 """
 
 def solve(data):
-    raise NotImplementedError("Write your solution here")
+    report = []
+
+    for line in data.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+
+        fields = [field.strip() for field in line.split("|")]
+        if len(fields) != 4:
+            continue
+
+        site, device, change, result = fields
+        if not result.lower().endswith('ok'):
+            continue
+
+        change_parts = change.rsplit(' ', 1)
+        if len(change_parts) != 2:
+            continue
+        action, ticket = change_parts
+
+        report.append(
+            site.title() + ' / ' + device.upper() + ' / ' + ticket + ': ' + action
+        )
+
+    return '\\n'.join(report)
+
 
 if __name__ == "__main__":
     try:

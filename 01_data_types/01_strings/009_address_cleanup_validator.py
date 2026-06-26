@@ -77,8 +77,46 @@ R2 ip=10.0.0.1 mac=0011.2233.4455
 FW1 ip=10.0.0 mac=00-11-22-33-44-55
 """
 
+def valid_ip(ip):
+    if ip.count(".") != 3:
+        return False
+    for items in ip.split("."):
+        if not items.isdigit():
+            return False
+        value = int(items)
+        if value < 0 or value > 255:
+            return False
+    return True
+
 def solve(data):
-    raise NotImplementedError("Write your solution here")
+    result = []
+    for items in data.splitlines():
+        if not items:
+            continue
+        
+        parts = items.split()
+        if len(parts) != 3:
+            continue
+
+        hostname = parts[0]
+        if not hostname.isalnum():
+            continue
+
+        ip_key, sep, ip_addr = parts[1].partition('=')
+        mac_key, sep, mac_addr = parts[2].partition('=')
+        if ip_key != 'ip' or mac_key != 'mac':
+            continue
+
+        if not valid_ip(ip_addr):
+            continue
+
+        mac = mac_addr.replace('.', '').replace(':', '').replace('-', '').lower()
+        if len(mac) != 12 or not mac.isalnum():
+            continue
+
+        result.append({'hostname': hostname, 'ip': ip_addr, 'mac': mac})
+
+    return result
 
 if __name__ == "__main__":
     try:

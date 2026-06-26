@@ -5,29 +5,31 @@ Methods to practice:
 - splitlines(), strip(), split(), lower(), replace(), startswith()
 
 Use Case:
-Network automation often starts by turning CLI tables into structured data.
-The output may contain headers, mixed interface name formats, and mixed status case.
-
-Assignment:
-Parse a simplified "show ip interface brief" output.
-Return only physical interfaces, normalize long interface names, and normalize statuses.
-
-Input:
-- multiline CLI output
+Parse CLI table output from "show ip interface brief" into structured data.
+Keep only physical interfaces, shorten interface names, normalize statuses to lowercase, and return a list of dictionaries.
 
 Rules:
-1. Skip empty lines.
-2. Skip the header line that starts with "Interface".
-3. Skip loopback interfaces.
-4. Convert "GigabitEthernet" to "Gi" and "FastEthernet" to "Fa".
-5. Convert line and protocol statuses to lowercase.
-6. Keep only rows that have at least 4 columns.
-
-Step output examples:
-- After split(), one data row should look like this:
-  ['GigabitEthernet0/1', '192.168.1.10', 'UP', 'UP']
-- After interface and status normalization, one result item should look like this:
-  {'interface': 'Gi0/1', 'ip': '192.168.1.10', 'line_status': 'up', 'protocol_status': 'up'}
+1. Create a variable `result` as an empty list.
+2. Create a loop using the `splitlines()` method to split the input string into separate lines and iterate through each line.
+3. Inside the loop, apply the `strip()` method to remove leading and trailing spaces from each line.
+4. Skip empty lines using:
+   if not line:
+       continue
+5. Skip the header line that starts with "Interface" using:
+   if line.startswith("Interface"):
+       continue
+6. Split the current line into columns using the `split()` method and store the result in a new variable.
+7. Skip invalid rows that contain fewer than 4 columns.
+8. Extract the interface name from the first column.
+9. Skip Loopback interfaces using:
+   if interface.startswith("Loopback"):
+       continue
+10. Replace long interface names with their short forms using the `replace()` method:
+    - GigabitEthernet → Gi
+    - FastEthernet → Fa
+11. Convert the line status and protocol status to lowercase using the `lower()` method.
+12. Create a dictionary with the parsed interface information and append it to the `result` list using `result.append()`.
+13. Return the `result` list.
 
 Expected result:
 - [
@@ -38,6 +40,7 @@ Expected result:
 """
 
 # Task: interface brief inventory
+# Input: multiline CLI output
 
 data = """
 Interface              IP-Address      Status Protocol
