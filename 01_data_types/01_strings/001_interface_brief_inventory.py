@@ -52,26 +52,28 @@ FastEthernet0/3        10.0.0.1        Up     Down
 
 def solve(data):
     result = []
-    for items in data.splitlines():
-        items.strip()
-        if not items or items.startswith('Interface'):
+    for line in data.splitlines():
+        line = line.strip()
+        if not line:
             continue
-        if items.startswith("Loopback"):
+        if line.startswith("Interface"):
             continue
-
-        columes = items.split()
-        if len(columes) < 4:
+        if line.startswith("Loopback"):
             continue
+        column = line.split()
+        if len(column) < 4:
+            continue
+        interface_name = column[0]
+        interface_name = interface_name.replace("GigabitEthernet", "Gi").replace("FastEthernet", 'Fa')
+        result.append(
+            {
+                'interface': interface_name,
+                'ip': column[1],
+                'line_status': column[2].lower(),
+                'protocol_status': column[3].lower()
+            }
+        )
 
-        interface = columes[0].replace("GigabitEthernet","Gi")
-        interface = columes[0].replace("FastEthernet", "Fa")
-
-        result.append({
-            'interface': interface,
-            'ip': columes[1],
-            'line_status': columes[2],
-            'protocol_status': columes[3].lower()
-        })
     return result
 
 
