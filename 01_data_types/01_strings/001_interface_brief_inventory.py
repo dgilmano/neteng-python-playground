@@ -60,21 +60,21 @@ def solve(data):
             continue
         if line.startswith("Loopback"):
             continue
-        column = line.split()
-        if len(column) < 4:
+        columne = line.split()
+        if len(columne) < 4:
             continue
-        interface_name = column[0]
-        interface_name = interface_name.replace("GigabitEthernet", "Gi").replace("FastEthernet", 'Fa')
+        interface_name = columne[0]
+        interface_name = interface_name.replace("GigabitEthernet", "Gi").replace("FastEthernet", "Fa")
         result.append(
             {
                 'interface': interface_name,
-                'ip': column[1],
-                'line_status': column[2].lower(),
-                'protocol_status': column[3].lower()
+                'ip': columne[1],
+                "line_status": columne[2].lower(),
+                'protocol_status': columne[3].lower()
             }
         )
-
     return result
+
 
 
 if __name__ == "__main__":
