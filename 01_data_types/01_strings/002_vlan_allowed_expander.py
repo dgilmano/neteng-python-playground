@@ -5,55 +5,62 @@ Methods to practice:
 - partition(), split(), strip(), replace(), isdigit(), zfill()
 
 Use Case:
-Switch configuration often stores allowed VLANs as compact strings.
-Automation may need a clean expanded list before comparing desired and actual state.
-
-Assignment:
-Parse a trunk allowed VLAN command and expand VLAN ranges.
-
-Input:
-- 'switchport trunk allowed vlan 1, 3,10-12,abc,20'
+Parse a trunk allowed VLAN command into a clean expanded VLAN list.
+Keep only valid numeric VLANs, expand ranges, skip invalid tokens, and return VLAN IDs as 4-character strings.
 
 Rules:
-1. Use partition('vlan') to separate the command prefix from the VLAN list.
-2. Remove spaces from the VLAN list.
-3. Split by commas.
-4. Keep single numeric VLANs.
-5. Expand numeric ranges like 10-12.
-6. Skip invalid tokens like abc.
-7. Return VLAN IDs as 4-character strings using zfill().
-
-Step output examples:
-- After partition('vlan') and removing spaces, VLAN text should look like this:
-  '1,3,10-12,abc,20'
-- After split(','), tokens should look like this:
-  ['1', '3', '10-12', 'abc', '20']
-- After expanding ranges and applying zfill(4), result should look like this:
-  ['0001', '0003', '0010', '0011', '0012', '0020']
+1. Create an empty list `result`.
+2. Use `partition("vlan")` to separate the VLAN part from the original string:
+   prefix, separator, vlan_text = data.partition("vlan")
+3. If the word `"vlan"` was not found, return an empty list:
+   if not separator:
+       return []
+4. Remove spaces from `vlan_text`:
+   vlan_text = vlan_text.replace(" ", "")
+5. Split `vlan_text` by commas and iterate through each token:
+   for token in vlan_text.split(","):
+6. Skip empty tokens:
+   if not token:
+       continue
+7. If the token contains `"-"`, treat it as a VLAN range.
+8. Split the range into `start` and `end`, then iterate from `start` to `end` inclusive:
+   start, end = token.split("-")
+   for vlan_id in range(int(start), int(end) + 1):
+9. Convert each VLAN ID to a string, format it with 4 digits, and append it to `result`:
+   result.append(str(vlan_id).zfill(4))
+10. After processing a range, use `continue` to move to the next token.
+11. If the token is not a range but is a number, format it with 4 digits and append it to `result`:
+   if token.isdigit():
+       result.append(token.zfill(4))
+12. Return the `result` list.
 
 Expected result:
 - ['0001', '0003', '0010', '0011', '0012', '0020']
 """
 
 # Task: VLAN allowed-list expander
+# Input: trunk allowed VLAN command
 
 data = 'switchport trunk allowed vlan 1, 3,10-12,abc,20'
 
 def solve(data):
     result = []
-    vlan_part = data.partition('vlan')[2].strip()
-    for items in vlan_part.split(','):
-        items = items.strip()
+    vlan = data.partition("vlan")[2].strip()
+    if not vlan:
+        return []
+    vlan_text = vlan.replace(" ", "")
+    for item in vlan_text.split(","):
+        if not item:
+            continue
+        if "-" in item:
+            start, end = item.split("-")
+            for vlan_id in range(int(start), int(end) + 1):
+                result.append(str(vlan_id).zfill(3))
+                continue
+        if item.isdigit():
+            result.append(str(item).zfill(3))
 
-        if '-' in items:
-            start, end = items.split("-")
-            for i in range(int(start), int(end) + 1):
-                result.append(i)
-        if items.isdigit():
-            result.append(int(items.zfill(4)))
-        
     return result
-
 
 if __name__ == "__main__":
     try:
