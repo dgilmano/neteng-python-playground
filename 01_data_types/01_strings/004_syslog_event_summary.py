@@ -15,42 +15,56 @@ Input:
 - multiline syslog text
 
 Rules:
-For each syslog line:
-1. Strip spaces from both sides of the line.
-2. Skip empty lines.
-3. Skip lines that do not contain '%LINK-3-UPDOWN'.
-
-Now parse only matching lines like this:
-SW1: %LINK-3-UPDOWN: Interface Gi0/1, changed state to up
-
-4. Extract device:
-   - device is the text before the first ':'.
-   - Use partition(':').
-   - Example: 'SW1'
-5. Extract message:
-   - message is the text after the last ':'.
-   - Use rpartition(':').
-   - Example: 'Interface Gi0/1, changed state to up'
-6. Extract interface from message:
-   - interface starts after 'Interface '.
-   - interface ends before the comma ','.
-   - Use index() and slicing.
-   - Example: 'Gi0/1'
-7. Determine state from message:
-   - 'up' if the message ends with 'up'
-   - 'down' if the message ends with 'down'
-   - 'unknown' otherwise
-8. Add one dictionary to result:
-   - {'device': device, 'interface': interface, 'state': state}
-
-Step output examples:
-- After filtering, one matching line should look like this:
-  'SW1: %LINK-3-UPDOWN: Interface Gi0/1, changed state to up'
-- After partition/rpartition, extracted values should look like this:
-  device = 'SW1'
-  message = 'Interface Gi0/1, changed state to up'
-- After slicing the message, one result item should look like this:
-  {'device': 'SW1', 'interface': 'Gi0/1', 'state': 'up'}
+1. Create an empty list `result`.
+2. Split the input data into lines and iterate through each line:
+   for line in data.splitlines():
+3. Remove leading and trailing spaces from the current line:
+   line = line.strip()
+4. Skip lines that do not contain the `%LINK-3-UPDOWN` event:
+   if line.find("%LINK-3-UPDOWN") == -1:
+       continue
+5. Extract the device name from the beginning of the line using `partition(":")`:
+   device, separator, rest = line.partition(":")
+6. Split the line by the last colon using `rpartition(":")` to separate the syslog header from the actual message:
+   header, separator, message = line.rpartition(":")
+7. If the separator was not found, skip the line:
+   if not separator:
+       continue
+8. Remove leading and trailing spaces from the message:
+   message = message.strip()
+9. Create a marker variable with the text that appears before the interface name:
+   marker = "Interface "
+10. Find the start and end positions of the interface name:
+   - start position: where `"Interface "` begins
+   - end position: the comma after the interface name
+   try:
+       start = message.index(marker)
+       end = message.index(",", start)
+   except ValueError:
+       continue
+11. Move `start` to the real beginning of the interface name by adding the marker length:
+   start = start + len(marker)
+12. Extract the interface name using string slicing:
+   interface = message[start:end]
+13. Convert the message to lowercase to make state detection case-insensitive:
+   normalized = message.lower()
+14. Detect the interface state:
+   - if the message ends with `"up"`, set state to `"up"`
+   - if the message ends with `"down"`, set state to `"down"`
+   - otherwise, set state to `"unknown"`
+   if normalized.endswith("up"):
+       state = "up"
+   elif normalized.endswith("down"):
+       state = "down"
+   else:
+       state = "unknown"
+15. Create a dictionary with parsed information and append it to the `result` list:
+   result.append({
+       "device": device.strip(),
+       "interface": interface,
+       "state": state,
+   })
+16. Return the `result` list.
 
 Expected result:
 - [

@@ -15,42 +15,49 @@ Input:
 - multiline neighbor table
 
 Rules:
-For each neighbor table line:
-1. Strip spaces from both sides of the line.
-2. Skip empty lines.
-3. Skip the header line that starts with 'Device ID'.
-
-Now parse one data row like this:
-SW2         gi0/1        SWITCH       cisco 9300
-
-4. Split the row into columns.
-   - Use split(maxsplit=3) so the platform field can contain spaces.
-5. Skip the row if it has fewer than 4 columns.
-6. Read the columns in this order:
-   - neighbor ID
-   - local interface
-   - capability
-   - platform
-7. Keep only neighbor IDs that are alphanumeric.
-   - Example: 'SW2' is valid.
-   - Example: 'bad-nei' is skipped.
-8. Normalize local interface to uppercase.
-   - Example: 'gi0/1' -> 'GI0/1'
-9. Keep only capabilities that contain letters only.
-10. Normalize capability to lowercase.
-    - Example: 'SWITCH' -> 'switch'
-11. Format platform with title().
-    - Example: 'cisco 9300' -> 'Cisco 9300'
-12. Add one dictionary to result:
-    - {'neighbor': neighbor, 'local_interface': local_interface, 'capability': capability, 'platform': platform}
-
-Step output examples:
-- After steps 1-3, one kept row should look like this:
-  SW2         gi0/1        SWITCH       cisco 9300
-- After split(maxsplit=3), columns should look like this:
-  ['SW2', 'gi0/1', 'SWITCH', 'cisco 9300']
-- After normalization, one result item should look like this:
-  {'neighbor': 'SW2', 'local_interface': 'GI0/1', 'capability': 'switch', 'platform': 'Cisco 9300'}
+1. Create an empty list `result`.
+2. Split the input data into lines and iterate through each line:
+   for line in data.splitlines():
+3. Remove leading and trailing spaces from the current line:
+   line = line.strip()
+4. Skip empty lines:
+   if not line:
+       continue
+5. Skip the table header:
+   if line.startswith("Device ID"):
+       continue
+6. Split the current line into 4 columns using `split(maxsplit=3)`:
+   columns = line.split(maxsplit=3)
+7. Skip invalid rows that contain fewer than 4 columns:
+   if len(columns) < 4:
+       continue
+8. Save the neighbor name from the first column:
+   neighbor = columns[0]
+9. Check that the neighbor name contains only letters and digits:
+   if not neighbor.isalnum():
+       continue
+Example:
+   "SW2".isalnum()      # True
+   "bad-nei".isalnum()  # False
+10. Save the capability from the third column:
+    capability = columns[2]
+11. Check that the capability contains only letters:
+    if not capability.isalpha():
+        continue
+Example:
+   "SWITCH".isalpha()   # True
+   SWITCH1".isalpha()  # False
+12. Create a dictionary with the parsed information. Normalize the values using:
+    - `upper()` for the local interface
+    - `lower()` for the capability
+    - `title()` for the platform
+   result.append({
+       "neighbor": neighbor,
+       "local_interface": columns[1].upper(),
+       "capability": capability.lower(),
+       "platform": columns[3].title(),
+   })
+13. Return the `result` list.
 
 Expected result:
 - [
@@ -93,9 +100,6 @@ def solve(data):
             }
         )
     return result
-
-
-        
 
 if __name__ == "__main__":
     try:

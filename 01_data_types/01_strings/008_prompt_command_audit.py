@@ -8,44 +8,37 @@ Use Case:
 Session logs include prompts and commands mixed together.
 Automation can audit whether dangerous commands were entered in configuration mode.
 
-Assignment:
-Parse command history and report dangerous config-mode commands.
-
-Input:
-- multiline terminal session log
-
 Rules:
-For each terminal session line:
-1. Strip spaces from both sides of the line.
-2. Skip empty lines.
-3. Skip lines that do not contain exactly one '#'.
-
-Now parse one command line like this:
-SW1(config-if)# shutdown
-
-4. Use partition('#') to split the line into:
-   - prompt: text before '#'
-   - command: text after '#'
-5. Strip spaces from prompt and command.
-6. Normalize command to lowercase.
-   - Example: ' shutdown' -> 'shutdown'
-7. Keep commands only from configuration prompts:
-   - prompt ends with '(config)'
-   - or prompt ends with '(config-if)'
-8. A dangerous command is one of these:
-   - command starts with 'no '
-   - command equals 'shutdown'
-9. Add one string to result:
-   - '<prompt>: <command>'
-
-Step output examples:
-- After strip() and filtering, one command line should look like this:
-  'SW1(config-if)# shutdown'
-- After partition('#') and normalization, values should look like this:
-  prompt = 'SW1(config-if)'
-  command = 'shutdown'
-- After adding a dangerous command, result should look like this:
-  ['SW1(config-if): shutdown']
+1. Create an empty list `result`.
+2. Split the input data into lines and iterate through each line:
+   for line in data.splitlines():
+3. Remove leading and trailing spaces from the current line:
+   line = line.strip()
+4. Skip empty lines and lines that do not contain exactly one `#` character:
+   if not line or line.count("#") != 1:
+       continue
+5. Split the line into the prompt and command using `partition("#")`:
+   prompt, separator, command = line.partition("#")
+   Example:
+   "SW1(config)#hostname SW1"
+   prompt = "SW1(config)"
+   separator = "#"
+   command = "hostname SW1"
+6. Remove leading and trailing spaces from the prompt. Convert the command to lowercase after removing leading and trailing spaces:
+   prompt = prompt.strip()
+   command = command.strip().lower()
+7. Keep only configuration mode prompts:
+   - `(config)`
+   - `(config-if)`
+   if not prompt.endswith("(config)") and not prompt.endswith("(config-if)"):
+       continue
+8. Check if the command starts with `"no "` or is equal to `"shutdown"`:
+   if command.startswith("no ") or command == "shutdown":
+9. Append the prompt and command to the `result` list:
+   result.append(prompt + " : " + command)
+   Example:
+   SW1(config-if) : shutdown
+10. Return the `result` list.
 
 Expected result:
 - ['SW1(config-if): shutdown', 'SW1(config): no router ospf 1']

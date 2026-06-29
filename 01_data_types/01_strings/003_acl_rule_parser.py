@@ -8,31 +8,59 @@ Use Case:
 ACL parsing requires fixed-position fields plus conditional logic for optional ports.
 Comments and malformed lines should not break the parser.
 
-Assignment:
-Parse ACL lines into structured records.
-
 Input:
 - multiline ACL text
 
 Rules:
-1. Strip every line.
-2. Skip empty lines and comment lines that start with '!'.
-3. Support only permit/deny actions.
-4. Normalize action and protocol to lowercase.
-5. Extract source and destination fields by index.
-6. Support source in these forms: any, host <ip>, or network/prefix.
-7. If the line contains "eq <port>", convert the port to int.
-8. If the port is missing or invalid, use None.
-9. Add a simple source_type field:
-   - 'network' if source contains exactly one slash
-   - 'any' if source is 'any'
-   - 'host' otherwise
-
-Step output examples:
-- After strip(), lower(), and split(), one ACL line should look like this:
-  ['permit', 'tcp', '10.0.0.0/24', 'any', 'eq', '443']
-- After reading fields and converting the port, one result item should look like this:
-  {'action': 'permit', 'protocol': 'tcp', 'source': '10.0.0.0/24', 'source_type': 'network', 'destination': 'any', 'port': 443}
+1. Create an empty list `result`.
+2. Split the input data into lines and iterate through each line:
+   for item in data.splitlines():
+3. Remove leading and trailing spaces from the current line:
+   line = item.strip()
+4. Skip empty lines, comment lines starting with `"!"`, and "remark" lines:
+   if not line or line.startswith("!") or line.startswith("remark"):
+       continue
+5. Convert the line to lowercase and split it into words:
+   parts = line.lower().split()
+6. Skip invalid rules:
+   - if the line has fewer than 4 parts
+   - if the first word is not `"permit"` or `"deny"`
+   if len(parts) < 4 or parts[0] not in ("permit", "deny"):
+       continue
+7. Create a dictionary `rule` with the action and protocol from the current line. 
+   Initialize the remaining fields with `None`.
+   rule = {
+       "action": parts[0],
+       "protocol": parts[1],
+       "source": None,
+       "source_type": None,
+       "destination": None,
+       "port": None,
+   }
+8. If the source is in `host` format, verify that the rule contains at least 5 fields. If not, skip the rule.
+   if parts[2] == "host":
+       if len(parts) < 5:
+           continue
+9. For `host` format, save the source, source type, and destination in the `rule` dictionary.
+   rule["source"] = parts[3]
+   rule["source_type"] = "host"
+   rule["destination"] = parts[4]
+10. Otherwise, save the source and destination in the `rule` dictionary.
+   rule["source"] = parts[2]
+   rule["destination"] = parts[3]
+11. In same else condition, detect the source type:
+   - if source is `"any"`, set `source_type` to `"any"`
+   - if source contains one `/`, set `source_type` to `"network"`
+   - otherwise, set `source_type` to `"host"`
+12. 11. Check if the rule contains the keyword `"eq"`. 
+If it does, find its position using `parts.index("eq")`. Verify that the next value exists and is a number. 
+If valid, convert it to an integer and save it in the `rule` dictionary.
+   if "eq" in parts:
+       eq_index = parts.index("eq")
+       if eq_index + 1 < len(parts) and parts[eq_index + 1].isdigit():
+           rule["port"] = int(parts[eq_index + 1])
+13. Append the completed `rule` dictionary to the `result` list.
+14. Return the `result` list.
 
 Expected result:
 - [
@@ -59,37 +87,41 @@ def solve(data):
         if not line or line.startswith("!") or line.startswith("remark"):
             continue
         parts = line.lower().split()
+        if len(parts) < 4 or parts[0] not in ("permit", "deny"):
+            continue
         rule = {
-            'action': parts[0],
-            'protocol': parts[1],
-            'source': None,
-            'source_type': None,
-            'destination': None,
-            'port': None
+            "action": parts[0],
+            "protocol": parts[1],
+            "source": None,
+            "source_type": None,
+            "destination": None,
+            "port": None
         }
-        if parts[2] == 'host':
+        if parts[2] == "host":
+            if len(parts) < 5:
+                continue
             rule['source'] = parts[3]
-            rule['source_type'] = "host"
-            rule['destination'] = parts[4]
-            if "eq" in parts:
-                port = parts[-1]
-                if port.isdigit():
-                    rule["port"] = int(port)
-                else:
-                    rule["port"] = None
+            rule["source_type"] = "host"
+            rule["desctination"] = parts[4]
         else:
             rule["source"] = parts[2]
             rule["destination"] = parts[3]
+
             if parts[2] == "any":
                 rule["source_type"] = "any"
-            else:
+            elif parts[2].count("/") == 1:
                 rule["source_type"] = "network"
-            if "eq" in parts:
-                rule["port"] = int(parts[-1])
+            else:
+                rule["source_type"] = "host"
+
+        if 'eq' in parts:
+            eq_index = parts.index("eq")
+            if eq_index + 1 < len(parts) and parts[eq_index + 1].isdigit():
+                rule["port"] = int(parts[eq_index + 1])
 
         result.append(rule)
-    return result
 
+    return result
 
 if __name__ == "__main__":
     try:

@@ -8,41 +8,44 @@ Use Case:
 Automation often needs only one section from a full running-config.
 The section starts with a marker and ends before the next top-level command.
 
-Assignment:
-Extract one interface block and return cleaned commands.
-
-Input:
-- multiline running-config text
-
 Rules:
-For each running-config line:
-1. Keep the original line so you can check indentation.
-2. Also create a stripped version of the line for comparisons and output.
-3. Skip empty lines.
-
-Now find this target block:
-interface Gi0/1
-
-4. Before the target block starts, skip all other lines.
-5. When the stripped line equals 'interface Gi0/1':
-   - start collecting lines.
-   - add 'interface Gi0/1' to result.
-6. After the target block starts, keep its indented child commands.
-   - Example: ' description WAN uplink'
-7. Stop when the next non-indented top-level line starts.
-   - Example: 'interface Gi0/2'
-8. Strip every line before adding it to result.
-   - Example: ' description WAN uplink' -> 'description WAN uplink'
-9. Skip child commands that start with 'shutdown'.
-10. Return the collected lines joined with '\\n'.
-
-Step output examples:
-- After stripping the target line, it should look like this:
-  'interface Gi0/1'
-- After stripping child commands and skipping shutdown, result should look like this:
-  ['interface Gi0/1', 'description WAN uplink', 'ip address 192.0.2.1 255.255.255.252']
-- After join('\n'), output should look like this:
-  'interface Gi0/1\ndescription WAN uplink\nip address 192.0.2.1 255.255.255.252'
+1. Create an empty list `result`.
+2. Create a flag variable `in_block` and set it to `False`.
+3. Split the input data into lines and iterate through each line:
+   for raw_line in data.splitlines():
+4. Remove trailing spaces using `rstrip()` and store the result in `line`:
+   line = raw_line.rstrip()
+5. Remove leading and trailing spaces using `strip()` and store the result in `stripped`:
+   stripped = line.strip()
+6. Skip empty lines:
+   if not stripped:
+       continue
+7. Check if the current line is the interface you want to extract:
+   if stripped == "interface Gi0/1":
+8. If the interface is found:
+   - set `in_block` to `True`
+   - append the interface name to the `result` list
+   - continue to the next iteration
+   in_block = True
+   result.append(stripped)
+   continue
+9. If you are already inside the interface block and the current line does not start with a space, stop processing because a new configuration block has started.
+   if in_block and raw_line and not raw_line.startswith(" "):
+       break
+   Example:
+   interface Gi0/1
+   description WAN
+   ip address ...
+   interface Gi0/2
+   - The loop stops when it reaches:
+      interface Gi0/2
+10. While processing the interface block, skip lines that start with `"shutdown"`:
+   if stripped.lower().startswith("shutdown"):
+       continue
+11. Append all remaining configuration lines to the `result` list:
+   result.append(stripped)
+12. Join all lines into a single string using `"\n".join()` and return the result:
+   return "\n".join(result)
 
 Expected result:
 - 'interface Gi0/1\\ndescription WAN uplink\\nip address 192.0.2.1 255.255.255.252'
