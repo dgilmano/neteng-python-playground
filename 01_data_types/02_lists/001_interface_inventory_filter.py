@@ -1,6 +1,12 @@
 """
 Task 1: Interface inventory filter
 
+Methods to practice:
+- append()
+- list iteration
+- index/key access
+- conditional filtering
+
 Use Case:
 Interface inventories often include loopbacks, shutdown links, and partial records.
 Return the names of physical interfaces whose line and protocol status are both up.

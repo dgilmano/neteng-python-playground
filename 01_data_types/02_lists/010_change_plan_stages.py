@@ -1,6 +1,11 @@
 """
 Task 10: Change plan stages
 
+Methods to practice:
+- append()
+- extend()
+- list ordering
+
 Use Case:
 Change plans often need runnable stages first and blocked stages clearly separated.
 Return stage names with ready stages first, then blocked stages, skipping completed stages.

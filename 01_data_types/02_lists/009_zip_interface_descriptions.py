@@ -1,6 +1,11 @@
 """
 Task 9: Zip interface descriptions
 
+Methods to practice:
+- zip()
+- append()
+- dict literals
+
 Use Case:
 CSV columns are often parsed into parallel lists that need to become structured records.
 Pair interface names with descriptions and return structured dictionaries.

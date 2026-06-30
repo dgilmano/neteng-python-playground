@@ -1,6 +1,10 @@
 """
 Task 6: Flatten command batches
 
+Methods to practice:
+- extend()
+- nested list iteration
+
 Use Case:
 Automation runners may receive commands grouped by phase but need one flat command list.
 Flatten command batches while preserving order.

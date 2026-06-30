@@ -7,12 +7,7 @@ Methods to practice:
 Use Case:
 Syslog lines are mostly text, but useful values can be extracted using markers.
 This is common when a full parser is not available.
-
-Assignment:
 Extract link events from syslog output.
-
-Input:
-- multiline syslog text
 
 Rules:
 1. Create an empty list `result`.

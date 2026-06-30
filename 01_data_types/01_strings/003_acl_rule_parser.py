@@ -8,9 +8,6 @@ Use Case:
 ACL parsing requires fixed-position fields plus conditional logic for optional ports.
 Comments and malformed lines should not break the parser.
 
-Input:
-- multiline ACL text
-
 Rules:
 1. Create an empty list `result`.
 2. Split the input data into lines and iterate through each line:

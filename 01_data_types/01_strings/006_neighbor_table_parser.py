@@ -7,12 +7,7 @@ Methods to practice:
 Use Case:
 Neighbor discovery tables are useful for topology inventory.
 The parser should clean names, validate device IDs, and normalize platform text.
-
-Assignment:
 Parse a simple neighbor table.
-
-Input:
-- multiline neighbor table
 
 Rules:
 1. Create an empty list `result`.

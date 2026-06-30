@@ -1,6 +1,11 @@
 """
 Task 4: Route metric top three
 
+Methods to practice:
+- sorted()
+- lambda key
+- slicing
+
 Use Case:
 Route analysis often ranks candidate next hops by metric.
 Return the three best route candidates ordered by metric from lowest to highest.

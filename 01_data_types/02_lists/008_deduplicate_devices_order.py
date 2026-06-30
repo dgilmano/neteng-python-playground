@@ -1,6 +1,11 @@
 """
 Task 8: Deduplicate devices in order
 
+Methods to practice:
+- set()
+- membership test
+- append()
+
 Use Case:
 Merged inventories can contain duplicate hostnames but the first order still matters.
 Remove duplicate devices while preserving their first-seen order.

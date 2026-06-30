@@ -8,9 +8,6 @@ Use Case:
 Reports are easier to scan when interface names use one style and numbers are aligned.
 Raw data may mix long and short forms.
 
-Input:
-- 'GigabitEthernet0/1, Gi0/12, FastEthernet0/3, Loopback0'
-
 Rules:
 1. Create an empty list `result`.
 2. Split the input string by commas and iterate through each interface:
@@ -43,8 +40,9 @@ Rules:
    # "Gi0/012"
 9. Join all formatted interface names into a single string using `", ".join()` and return the result:
    return ", ".join(result)
-   Expected result:
-   - 'Gi0/001, Gi0/012, Fa0/003'
+
+Expected result:
+- 'Gi0/001, Gi0/012, Fa0/003'
 """
 
 # Task: interface name report

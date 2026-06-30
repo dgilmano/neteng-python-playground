@@ -1,6 +1,11 @@
 """
 Task 5: Neighbor row report
 
+Methods to practice:
+- index access
+- append()
+- list iteration
+
 Use Case:
 Discovery tables are often represented as rows where each column has a fixed position.
 Turn neighbor rows into readable link strings.

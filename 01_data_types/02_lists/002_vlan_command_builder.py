@@ -1,6 +1,12 @@
 """
 Task 2: VLAN command builder
 
+Methods to practice:
+- append()
+- list iteration
+- str()
+- zfill()
+
 Use Case:
 Change scripts often turn a list of VLAN IDs into a list of CLI commands.
 Build one normalized VLAN command for each VLAN ID.

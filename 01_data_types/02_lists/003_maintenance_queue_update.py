@@ -1,6 +1,11 @@
 """
 Task 3: Maintenance queue update
 
+Methods to practice:
+- insert()
+- append()
+- list mutation
+
 Use Case:
 Operations queues need priority jobs at the front and cleanup jobs at the end.
 Update a maintenance queue with one priority job and one final post-check job.

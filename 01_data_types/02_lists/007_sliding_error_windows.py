@@ -1,6 +1,12 @@
 """
 Task 7: Sliding error windows
 
+Methods to practice:
+- range()
+- slicing
+- sum()
+- append()
+
 Use Case:
 Monitoring code often checks rolling windows of recent counters.
 Return the sum of every 3-sample sliding window.
