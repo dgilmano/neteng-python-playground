@@ -2,11 +2,35 @@
 
 ## Theory
 
-A string (`str`) is an immutable sequence of Unicode characters.
+A string (`str`) is an ordered sequence of characters used to store and process text data.
 
-Strings are used to store and process text data such as hostnames, interface names, IP addresses, configuration lines, CLI commands, log messages, and user input.
+Each character in a string has its own position, called an **index**.
 
-Because strings are immutable, string methods do not modify the original string. Instead, they return a new string object.
+Strings in Python are **immutable**, which means they cannot be changed after they are created.
+
+- Access a single character using **indexing**.
+- Access a part of a string using **slicing**.
+- The first character has index `0`.
+
+### String Immutability
+
+A string is an immutable object. This means you cannot modify an existing string directly.
+
+- You cannot change a single character or part of a string.
+- Operations that appear to modify a string actually create and return a new string.
+- To "change" a string, assign the new value to a variable.
+
+Example:
+
+```python
+text = "hello"
+
+# Creates a new string
+text = text.upper()
+
+print(text)
+# HELLO
+```
 
 Strings support:
 
@@ -29,6 +53,112 @@ Many automation tasks rely heavily on string processing because network devices,
 - extract information
 - format output
 
+---
+
+## String Methods
+
+### Case Conversion
+
+```python
+s.lower()         # Convert all characters to lowercase.
+s.upper()         # Convert all characters to uppercase.
+s.capitalize()    # Capitalize the first character.
+s.title()         # Capitalize the first letter of each word.
+s.swapcase()      # Swap lowercase and uppercase characters.
+s.casefold()      # Aggressive lowercase conversion for case-insensitive comparisons.
+```
+
+### Trimming and Removing
+
+```python
+s.strip()         # Remove leading and trailing whitespace.
+s.lstrip()        # Remove leading whitespace.
+s.rstrip()        # Remove trailing whitespace.
+s.removeprefix()  # Remove the specified prefix.
+s.removesuffix()  # Remove the specified suffix.
+```
+
+### Searching and Counting
+
+```python
+s.find()          # Find the first occurrence or return -1.
+s.rfind()         # Find the last occurrence or return -1.
+s.index()         # Find the first occurrence or raise ValueError.
+s.rindex()        # Find the last occurrence or raise ValueError.
+s.count()         # Count occurrences of a substring.
+```
+
+### Prefix and Suffix Checks
+
+```python
+s.startswith()    # Check whether the string starts with a prefix.
+s.endswith()      # Check whether the string ends with a suffix.
+```
+
+### Splitting
+
+```python
+s.split()         # Split the string into a list.
+s.rsplit()        # Split from the right.
+s.partition()     # Split into three parts at the first separator.
+s.rpartition()    # Split into three parts at the last separator.
+s.splitlines()    # Split into lines.
+```
+
+### Joining
+
+```python
+s.join()          # Join iterable elements into a single string.
+```
+
+### Replacing and Translating
+
+```python
+s.replace()       # Replace occurrences of a substring.
+s.translate()     # Replace characters using a translation table.
+str.maketrans()   # Create a translation table.
+```
+
+### Content Checks
+
+```python
+s.isalpha()       # Only alphabetic characters.
+s.isdigit()       # Only digit characters.
+s.isalnum()       # Only letters and digits.
+s.islower()       # All cased characters are lowercase.
+s.isupper()       # All cased characters are uppercase.
+s.isspace()       # Only whitespace characters.
+s.istitle()       # Title Case string.
+s.isascii()       # Only ASCII characters.
+s.isidentifier()  # Valid Python identifier.
+s.isdecimal()     # Only decimal digits.
+s.isnumeric()     # Only numeric characters.
+s.isprintable()   # Only printable characters.
+```
+
+### Alignment and Padding
+
+```python
+s.center()        # Center the string.
+s.ljust()         # Left-align the string.
+s.rjust()         # Right-align the string.
+s.zfill()         # Pad with leading zeros.
+```
+
+### Formatting
+
+```python
+s.format()        # Format a string using placeholders.
+s.format_map()    # Format using a mapping (dictionary).
+```
+
+### Encoding
+
+```python
+s.encode()        # Encode the string into bytes.
+```
+---
+
 ## Practice Tasks
 
 These exercises focus on realistic string parsing for network automation.
@@ -47,108 +177,3 @@ slicing, validation, normalization, and structured output.
 | 008 | `008_prompt_command_audit.py` | Audit dangerous config-mode commands | `partition()`, `startswith()`, `endswith()`, `lower()`, `count()` |
 | 009 | `009_address_cleanup_validator.py` | Validate IP and MAC inventory data | `partition()`, `count()`, `split()`, `isdigit()`, `replace()`, `lower()`, `isalnum()` |
 | 010 | `010_change_report_builder.py` | Build a clean change report | `splitlines()`, `strip()`, `split()`, `rsplit()`, `lower()`, `upper()`, `title()`, `endswith()`, `join()` |
-
----
-
-## String Methods
-
-### Case Conversion
-
-```python
-s.lower()
-s.upper()
-s.capitalize()
-s.title()
-s.swapcase()
-s.casefold()
-```
-
-### Trimming and Removing
-
-```python
-s.strip()
-s.lstrip()
-s.rstrip()
-s.removeprefix()
-s.removesuffix()
-```
-
-### Searching and Counting
-
-```python
-s.find()
-s.rfind()
-s.index()
-s.rindex()
-s.count()
-```
-
-### Prefix and Suffix Checks
-
-```python
-s.startswith()
-s.endswith()
-```
-
-### Splitting
-
-```python
-s.split()
-s.rsplit()
-s.partition()
-s.rpartition()
-s.splitlines()
-```
-
-### Joining
-
-```python
-s.join()
-```
-
-### Replacing and Translating
-
-```python
-s.replace()
-s.translate()
-str.maketrans()
-```
-
-### Content Checks
-
-```python
-s.isalpha()
-s.isdigit()
-s.isalnum()
-s.islower()
-s.isupper()
-s.isspace()
-s.istitle()
-s.isascii()
-s.isidentifier()
-s.isdecimal()
-s.isnumeric()
-s.isprintable()
-```
-
-### Alignment and Padding
-
-```python
-s.center()
-s.ljust()
-s.rjust()
-s.zfill()
-```
-
-### Formatting
-
-```python
-s.format()
-s.format_map()
-```
-
-### Encoding
-
-```python
-s.encode()
-```
