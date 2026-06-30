@@ -60,102 +60,102 @@ Many automation tasks rely heavily on string processing because network devices,
 ### Case Conversion
 
 ```python
-s.lower()         # Convert all characters to lowercase.
-s.upper()         # Convert all characters to uppercase.
-s.capitalize()    # Capitalize the first character.
-s.title()         # Capitalize the first letter of each word.
-s.swapcase()      # Swap lowercase and uppercase characters.
-s.casefold()      # Aggressive lowercase conversion for case-insensitive comparisons.
+s.lower()             # Convert all characters to lowercase.
+s.upper()             # Convert all characters to uppercase.
+s.capitalize()        # Capitalize the first character.
+s.title()             # Capitalize the first letter of each word.
+s.swapcase()          # Swap lowercase and uppercase characters.
+s.casefold()          # Aggressive lowercase conversion for case-insensitive comparisons.
 ```
 
 ### Trimming and Removing
 
 ```python
-s.strip()         # Remove leading and trailing whitespace.
-s.lstrip()        # Remove leading whitespace.
-s.rstrip()        # Remove trailing whitespace.
-s.removeprefix()  # Remove the specified prefix.
-s.removesuffix()  # Remove the specified suffix.
+s.strip()             # Remove leading and trailing whitespace.
+s.lstrip()            # Remove leading whitespace.
+s.rstrip()            # Remove trailing whitespace.
+s.removeprefix()      # Remove the specified prefix.
+s.removesuffix()      # Remove the specified suffix.
 ```
 
 ### Searching and Counting
 
 ```python
-s.find()          # Find the first occurrence or return -1.
-s.rfind()         # Find the last occurrence or return -1.
-s.index()         # Find the first occurrence or raise ValueError.
-s.rindex()        # Find the last occurrence or raise ValueError.
-s.count()         # Count occurrences of a substring.
+s.find()              # Find the first occurrence or return -1.
+s.rfind()             # Find the last occurrence or return -1.
+s.index()             # Find the first occurrence or raise ValueError.
+s.rindex()            # Find the last occurrence or raise ValueError.
+s.count()             # Count occurrences of a substring.
 ```
 
 ### Prefix and Suffix Checks
 
 ```python
-s.startswith()    # Check whether the string starts with a prefix.
-s.endswith()      # Check whether the string ends with a suffix.
+s.startswith()        # Check whether the string starts with a prefix.
+s.endswith()          # Check whether the string ends with a suffix.
 ```
 
 ### Splitting
 
 ```python
-s.split()         # Split the string into a list.
-s.rsplit()        # Split from the right.
-s.partition()     # Split into three parts at the first separator.
-s.rpartition()    # Split into three parts at the last separator.
-s.splitlines()    # Split into lines.
+s.split()             # Split the string into a list.
+s.rsplit()            # Split the string from the right.
+s.partition()         # Split into three parts at the first separator.
+s.rpartition()        # Split into three parts at the last separator.
+s.splitlines()        # Split the string into lines.
 ```
 
 ### Joining
 
 ```python
-s.join()          # Join iterable elements into a single string.
+s.join()              # Join iterable elements into a single string.
 ```
 
 ### Replacing and Translating
 
 ```python
-s.replace()       # Replace occurrences of a substring.
-s.translate()     # Replace characters using a translation table.
-str.maketrans()   # Create a translation table.
+s.replace()           # Replace occurrences of a substring.
+s.translate()         # Replace characters using a translation table.
+str.maketrans()       # Create a translation table.
 ```
 
 ### Content Checks
 
 ```python
-s.isalpha()       # Only alphabetic characters.
-s.isdigit()       # Only digit characters.
-s.isalnum()       # Only letters and digits.
-s.islower()       # All cased characters are lowercase.
-s.isupper()       # All cased characters are uppercase.
-s.isspace()       # Only whitespace characters.
-s.istitle()       # Title Case string.
-s.isascii()       # Only ASCII characters.
-s.isidentifier()  # Valid Python identifier.
-s.isdecimal()     # Only decimal digits.
-s.isnumeric()     # Only numeric characters.
-s.isprintable()   # Only printable characters.
+s.isalpha()           # Check if all characters are alphabetic.
+s.isdigit()           # Check if all characters are digits.
+s.isalnum()           # Check if all characters are letters or digits.
+s.islower()           # Check if all cased characters are lowercase.
+s.isupper()           # Check if all cased characters are uppercase.
+s.isspace()           # Check if all characters are whitespace.
+s.istitle()           # Check if the string is in title case.
+s.isascii()           # Check if all characters are ASCII.
+s.isidentifier()      # Check if the string is a valid Python identifier.
+s.isdecimal()         # Check if all characters are decimal digits.
+s.isnumeric()         # Check if all characters are numeric.
+s.isprintable()       # Check if all characters are printable.
 ```
 
 ### Alignment and Padding
 
 ```python
-s.center()        # Center the string.
-s.ljust()         # Left-align the string.
-s.rjust()         # Right-align the string.
-s.zfill()         # Pad with leading zeros.
+s.center()            # Center the string.
+s.ljust()             # Left-align the string.
+s.rjust()             # Right-align the string.
+s.zfill()             # Pad the string with leading zeros.
 ```
 
 ### Formatting
 
 ```python
-s.format()        # Format a string using placeholders.
-s.format_map()    # Format using a mapping (dictionary).
+s.format()            # Format a string using placeholders.
+s.format_map()        # Format a string using a mapping (dictionary).
 ```
 
 ### Encoding
 
 ```python
-s.encode()        # Encode the string into bytes.
+s.encode()            # Encode the string into bytes.
 ```
 ---
 
