@@ -25,16 +25,18 @@ Rules:
 4. Skip non-physical interfaces. Save the reason in `skipped`.
 5. Skip interfaces that are not fully operational (`status` or `protocol` is not `"up"`). Save the reason in `skipped`.
 6. Skip interfaces without a description. Save the reason in `skipped`.
-7. Create a dictionary containing:
-   - `name`
-   - `description`
-   - `speed`
-   - `summary` (`"<name> - <description> - <speed>"`)
-8. Append the dictionary to `result`.
-9. Return a dictionary containing:
-    - `interfaces`
-    - `skipped`
-    - `total`
+7. Append a dictionary containing the interface name, description, and speed to the `result` list:
+   result.append({
+    "name": name,
+    'description': description,
+    'speed': item.get('speed'),
+   })
+8. Return a dictionary containing::
+   return {
+    'interfaces': result,
+    'skipped': skipped,
+    'total_operational_interfaces': len(result)
+   }
 
 Expected result:
 - [{'name': 'Gi0/1', 'description': 'uplink', 'speed': '10G'}, {'name': 'Gi0/3', 'description': 'storage', 'speed': '25G'}]
@@ -92,7 +94,7 @@ def solve(data):
     return {
         'interfaces': result,
         'skipped': skipped,
-        'total operational interfaces': len(result)
+        'total_operational_interfaces': len(result)
     }
 
 
@@ -139,6 +141,6 @@ def solve(data):
     return {
         "interfaces": result,
         "skipped": skipped,
-        "total operational interfaces": len(result),
+        "total_operational_interfaces": len(result),
     }
 """
