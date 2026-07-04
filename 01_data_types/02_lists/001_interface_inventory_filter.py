@@ -3,6 +3,7 @@ Task 1: Interface inventory filter
 
 Methods to practice:
 - append()
+- get()
 - continue
 - loop filtering
 - dictionary access
