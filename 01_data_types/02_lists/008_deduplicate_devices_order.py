@@ -1,36 +1,56 @@
 """
-Task 8: Deduplicate devices in order
+Task 8: Device deduplicator
 
 Methods to practice:
+- for
+- enumerate()
 - set()
-- membership test
 - append()
+- .strip()
+- .lower()
+- .upper()
+- isinstance()
+- continue
+- membership check
+- structured output
 
 Use Case:
-Merged inventories can contain duplicate hostnames but the first order still matters.
-Remove duplicate devices while preserving their first-seen order.
+Inventory exports from multiple collectors often contain duplicate hostnames.
+Some records may be empty, malformed, or use inconsistent casing.
+A production script should normalize names, remove duplicates while preserving first-seen order, and keep an audit trail.
 
 Rules:
-1. Create a variable `result` as an empty list.
-2. Create a variable `seen` as an empty set:
-   seen = set()
-3. Create a loop that iterates over devices in the original order:
-   for device in data:
-4. Check whether the current device is already in `seen`.
-5. If the device is already in `seen`, skip it using `continue`.
-6. If the device is new, add it to the `seen` set using `seen.add()`.
-7. Append the new device to the `result` list using `result.append()`.
-8. Preserve the first-seen order of devices.
-9. Return the `result` list.
+1. Create an empty dictionary called `result` with two keys:
+   - `"devices"` for valid unique devices.
+   - `"skipped"` for invalid or duplicate entries.
+2. Create an empty set called `seen`.
+3. Create a loop to iterate through every item in `data`.
+   Use `enumerate()` so every skipped record can include the original row number.
+4. Check whether the current item is a string.
+   If not, append a skipped record with the row number and reason, then continue.
+5. Remove leading and trailing spaces using `strip()`.
+6. If the cleaned device name is empty, append a skipped record with the row number and reason, then continue.
+7. Create a normalized name using `lower()` for duplicate detection.
+8. If the normalized name is already in `seen`, append a skipped record with the row number and reason, then continue.
+9. Add the normalized name to `seen`.
+10. Append the cleaned device name to `result["devices"]`.
+    Use `upper()` for readable and consistent output.
+11. After the loop, return the `result` dictionary.
 
-Expected result:
-- ['r1', 'sw1', 'fw1', 'r2']
+Expected output:
+{
+    "devices": ["R1", "SW1", "FW1", "R2"],
+    "skipped": [
+        {"row": 3, "reason": "duplicate device"},
+        {"row": 4, "reason": "device is not a string"},
+        {"row": 5, "reason": "blank device name"},
+        {"row": 7, "reason": "duplicate device"},
+        {"row": 9, "reason": "blank device name"},
+    ],
+}
 """
 
-# Task: deduplicate devices in order
-
-data = ['r1', 'sw1', 'r1', 'fw1', 'sw1', 'r2']
-
+data = ["r1", " SW1 ", "R1", None, " ", "fw1", "sw1", "r2", ""]
 
 def solve(data):
     raise NotImplementedError("Write your solution here")
@@ -47,14 +67,41 @@ if __name__ == "__main__":
 # =============================================================================
 """
 def solve(data):
-    result = []
+    result = {
+        "devices": [],
+        "skipped": [],
+    }
+
     seen = set()
 
-    for device in data:
-        if device in seen:
+    for index, device in enumerate(data, start=1):
+        if not isinstance(device, str):
+            result["skipped"].append({
+                "row": index,
+                "reason": "device is not a string",
+            })
             continue
-        seen.add(device)
-        result.append(device)
+
+        cleaned_device = device.strip()
+
+        if not cleaned_device:
+            result["skipped"].append({
+                "row": index,
+                "reason": "blank device name",
+            })
+            continue
+
+        normalized_device = cleaned_device.lower()
+
+        if normalized_device in seen:
+            result["skipped"].append({
+                "row": index,
+                "reason": "duplicate device",
+            })
+            continue
+
+        seen.add(normalized_device)
+        result["devices"].append(cleaned_device.upper())
 
     return result
 """

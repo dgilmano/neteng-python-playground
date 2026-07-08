@@ -3,38 +3,90 @@ Task 2: VLAN command builder
 
 Methods to practice:
 - append()
-- list iteration
+- extend()
+- continue
+- isinstance()
+- get()
 - str()
 - zfill()
+- upper()
 
 Use Case:
-Change scripts often turn a list of VLAN IDs into a list of CLI commands.
-Build one normalized VLAN command for each VLAN ID.
+Network automation often requires generating configuration commands from structured inventory data.
+Build VLAN configuration blocks from a list of VLAN records.
 
 Rules:
-1. Create a variable `commands` as an empty list.
-2. Create a loop that iterates over VLAN IDs in the original order:
-   for vlan_id in data:
-3. Inside the loop, convert the current VLAN ID to a string using `str()`.
-4. Format the VLAN string as 4 characters using the `zfill(4)` method.
-5. Store the formatted VLAN string in a variable such as `vlan_text`.
-6. Build a command in the form:
-   "vlan " + vlan_text
-7. Append the command to the `commands` list using `commands.append()`.
-8. Do not sort or reorder VLAN IDs.
-9. Return the `commands` list.
+
+1. Create an empty list called `commands`.
+2. Create a loop to iterate through every VLAN record:
+   for vlan in data:
+3. Create variables for the fields you will use later. Use the `get()` method to safely extract values from the VLAN dictionary:
+   - `vlan_id`
+   - `name`
+4. Skip records where `vlan_id` is not an integer.
+5. Skip records where `vlan_id` is outside the valid VLAN range: `1-4094`.
+6. Skip records without a VLAN name.
+7. Convert `vlan_id` to a string and normalize it to 4 digits using `zfill(4)`.
+8. Normalize the VLAN name using `strip()` and `upper()`.
+9. Add a VLAN configuration block to `commands` using `extend()`:
+   commands.extend([
+       f"vlan {vlan_text}",
+       f" name {name}",
+       " exit",
+   ])
+10. Return the `commands` list.
 
 Expected result:
-- ['vlan 0010', 'vlan 0020', 'vlan 0030', 'vlan 0100']
+[
+    'vlan 0010',
+    ' name DATA',
+    ' exit',
+    'vlan 0020',
+    ' name VOICE',
+    ' exit',
+    'vlan 0030',
+    ' name MGMT',
+    ' exit',
+    'vlan 0100',
+    ' name SERVERS',
+    ' exit'
+]
 """
 
 # Task: vlan command builder
 
-data = [10, 20, 30, 100]
+data = [
+    {'vlan_id': 10, 'name': 'DATA'},
+    {'vlan_id': 20, 'name': ' voice '},
+    {'vlan_id': 30, 'name': 'MGMT'},
+    {'vlan_id': 100, 'name': 'servers'},
+    {'vlan_id': 5000, 'name': 'INVALID'},
+    {'vlan_id': 'abc', 'name': 'BROKEN'},
+    {'vlan_id': 40, 'name': ''},
+]
 
 
 def solve(data):
-    raise NotImplementedError("Write your solution here")
+    commands = []
+    for item in data:
+        vlan_id = item.get('vlan_id', '')
+        name = item.get('name', '').strip().upper()
+
+        if not isinstance(vlan_id, int):
+            continue
+        if vlan_id < 1 or vlan_id > 4094:
+            continue
+        if not name:
+            continue
+        
+        vlan_text = str(vlan_id).zfill(4)
+        commands.extend([
+            f'vlan {vlan_text}',
+            f'name {name}',
+            f'exit'
+        ])
+    return commands
+
 
 if __name__ == "__main__":
     try:
@@ -49,10 +101,20 @@ if __name__ == "__main__":
 """
 def solve(data):
     commands = []
-
-    for vlan_id in data:
+    for vlan in data:
+        vlan_id = vlan.get('vlan_id')
+        name = vlan.get('name', '').strip().upper()
+        if not isinstance(vlan_id, int):
+            continue
+        if vlan_id < 1 or vlan_id > 4094:
+            continue
+        if not name:
+            continue
         vlan_text = str(vlan_id).zfill(4)
-        commands.append('vlan ' + vlan_text)
-
+        commands.extend([
+            f"vlan {vlan_text}",
+            f" name {name}",
+            " exit",
+        ])
     return commands
 """
