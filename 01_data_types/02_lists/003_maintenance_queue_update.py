@@ -4,33 +4,91 @@ Task 3: Maintenance queue update
 Methods to practice:
 - insert()
 - append()
-- list mutation
+- continue
+- membership checks
+- duplicate removal
+- strip()
+- lower()
+- set()
 
 Use Case:
-Operations queues need priority jobs at the front and cleanup jobs at the end.
-Update a maintenance queue with one priority job and one final post-check job.
+Maintenance queues often contain duplicate jobs, inconsistent formatting, empty records, and invalid items.
+Update the queue while keeping job order, adding mandatory jobs, and reporting skipped records.
 
 Rules:
-1. Work with the existing `data` list.
-2. Insert the priority job `"emergency-core"` at the beginning of the list using `insert()`:
-   data.insert(0, "emergency-core")
-3. Remember that index `0` means the first position in the list.
-4. Append the final job `"post-check"` to the end of the list using `append()`:
-   data.append("post-check")
-5. Do not create a separate result list for this task.
-6. Return the updated `data` list.
+1. Create an empty list `queue` for valid jobs.
+2. Create an empty set `seen` to track duplicate job names.
+3. Create an empty list `skipped` to store skipped records and reasons.
+4. Iterate through every job in `data`.
+5. Skip values that are not strings. Save the reason in `skipped`.
+6. Normalize each job using `strip()` and `lower()`.
+7. Skip empty jobs. Save the reason in `skipped`.
+8. Skip duplicate jobs while keeping the first occurrence. Save the reason in `skipped`.
+9. Add valid unique jobs to `queue`.
+10. Insert `emergency-core` at the beginning if it is not already present.
+11. Append `post-check` at the end if it is not already present.
+12. Return a dictionary containing:
+    - `queue`
+    - `skipped`
+    - `total_jobs`
 
 Expected result:
-- ['emergency-core', 'backup-core', 'audit-fw', 'post-check']
+{
+    'queue': ['emergency-core', 'backup-core', 'audit-fw', 'post-check'],
+    'skipped': [
+        {'job': ' backup-core ', 'reason': 'duplicate'},
+        {'job': '', 'reason': 'empty job'},
+        {'job': None, 'reason': 'not a string'}
+    ],
+    'total_jobs': 4
+}
 """
 
-# Task: maintenance queue update
-
-data = ['backup-core', 'audit-fw']
-
+data = [
+    'backup-core',
+    'audit-fw',
+    ' backup-core ',
+    '',
+    None,
+]
 
 def solve(data):
-    raise NotImplementedError("Write your solution here")
+    queue = []
+    seen = set()
+    skipped = []
+    for job in data:
+        if not isinstance(job, str):
+            skipped.append({
+                'job': job,
+                'reason': 'not string'
+            })
+            continue
+        job_strip = job.strip().lower()
+        if not job_strip:
+            skipped.append({
+                'job': job,
+                'reason': 'empty job'
+            })
+            continue
+        if job_strip in seen:
+            skipped.append({
+                'job': job,
+                'reason': 'duplicate'
+            })
+            continue
+        seen.add(job_strip)
+        queue.append(job_strip)
+    if 'emergency-core' not in seen:
+        queue.insert(0, 'emergency-core')
+    if 'post-check' not in seen:
+        queue.append('post-check')
+    
+    return {
+        'queue': queue,
+        'skipped': skipped,
+        'total_jobs': len(queue)
+    }
+        
 
 if __name__ == "__main__":
     try:
@@ -44,7 +102,42 @@ if __name__ == "__main__":
 # =============================================================================
 """
 def solve(data):
-    data.insert(0, 'emergency-core')
-    data.append('post-check')
-    return data
+    queue = []
+    seen = set()
+    skipped = []
+    for job in data:
+        if not isinstance(job, str):
+            skipped.append({
+                'job': job,
+                'reason': 'not a string'
+            })
+            continue
+        normalized_job = job.strip().lower()
+        if not normalized_job:
+            skipped.append({
+                'job': job,
+                'reason': 'empty job'
+            })
+            continue
+
+        if normalized_job in seen:
+            skipped.append({
+                'job': job,
+                'reason': 'duplicate'
+            })
+            continue
+        seen.add(normalized_job)
+        queue.append(normalized_job)
+
+    if 'emergency-core' not in seen:
+        queue.insert(0, 'emergency-core')
+
+    if 'post-check' not in seen:
+        queue.append('post-check')
+
+    return {
+        'queue': queue,
+        'skipped': skipped,
+        'total_jobs': len(queue)
+    }
 """
